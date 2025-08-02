@@ -7,18 +7,29 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { Wallet, Menu, X, Palette, GalleryThumbnailsIcon as Gallery, User, Trophy, Bell } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { hederaClient } from "@/lib/hedera-client"
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
-  const [isConnected, setIsConnected] = useState(true) // Set to true for demo
-  const [accountId] = useState("0.0.123456")
+  const [isConnected, setIsConnected] = useState(false) // Set to true for demo
+  const [accountId, setAccountId] = useState("0.0.1234")
   const [username] = useState("ArtCollector2024")
   const [userPoints] = useState(15420)
   const [notifications] = useState(3)
+  const [balance, setBalance] = useState('') // Example balance in HBAR
 
   const connectWallet = async () => {
     try {
       // HashPack wallet connection logic would go here
+
+      const connectAccount = await hederaClient.connectWallet()
+      console.log("Connected to HashPack wallet:", connectAccount)
+      // Simulate successful connection
+      if (!connectAccount) {
+        throw new Error("Failed to connect to HashPack wallet")
+      }
+      setBalance(connectAccount?.balance)
+      setIsConnected(true)
       console.log("Connecting to HashPack wallet...")
     } catch (error) {
       console.error("Failed to connect wallet:", error)
@@ -101,7 +112,7 @@ export function Navbar() {
                     {accountId}
                   </div>
                   <div className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-3 py-1 rounded-full text-sm">
-                    1,250 HBAR
+                    {balance ? `${balance} HBAR` : "Loading..." }
                   </div>
                 </div>
               </div>
