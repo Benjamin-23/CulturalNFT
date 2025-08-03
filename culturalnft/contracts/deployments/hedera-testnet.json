@@ -4,10 +4,10 @@
   "deployer": "0xFc6E41a8D293A79be1A02473aa4e19d952b05D13",
   "communityWallet": "0x7E0ACa2f90A76115c34AFB7D7469507aAc8e9F31",
   "contracts": {
-    "CulturalNFT": "0x64bE6E79629Cd04866D0Afa79A8c1478E2209f48",
-    "CulturalMarketplace": "0x8A7DB2a3a2451dCcC4fc81AF5D8E7FC6DbcB363D",
-    "CommunityRewards": "0x03452eb161Bce1dAa28360c02C771aEbfbf90b85"
+    "CulturalNFT": "0x7624633eE3bfeFfe1E855E1eFe5B5bEdCB32c05B",
+    "CulturalMarketplace": "0xC3ae680a1Ad644A2bBDb1957BD9cDB09A6016061",
+    "CommunityRewards": "0x1be9484ef2Cc1A4F3833F779c79aDD711c93fcF8"
   },
-  "deploymentTime": "2025-08-02T09:03:03.224Z",
-  "blockNumber": 23040193
+  "deploymentTime": "2025-08-03T18:20:18.256Z",
+  "blockNumber": 23100106
 }

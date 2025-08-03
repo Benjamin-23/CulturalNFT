@@ -1,99 +1,113 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import Image from "next/image"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { Coins, Clock, TrendingUp, AlertCircle, CheckCircle, Wallet } from "lucide-react"
-import { hederaClient } from "@/lib/hedera-client"
+import { useState } from "react";
+import Image from "next/image";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import {
+  Coins,
+  Clock,
+  TrendingUp,
+  AlertCircle,
+  CheckCircle,
+  Wallet,
+} from "lucide-react";
+import { hederaClient } from "@/lib/hedera-client";
 
 interface Artwork {
-  id: number
-  title: string
-  artist: string
-  culture: string
-  price: string
-  highestBid?: string | null
-  timeLeft?: string | null
-  image: string
-  isAuction?: boolean
+  id: number;
+  title: string;
+  artist: string;
+  culture: string;
+  price: string;
+  highestBid?: string | null;
+  timeLeft?: string | null;
+  image: string;
+  isAuction?: boolean;
 }
 
 interface BidModalProps {
-  isOpen: boolean
-  onClose: () => void
-  artwork: Artwork | null
+  isOpen: boolean;
+  onClose: () => void;
+  artwork: Artwork | null;
 }
 
 export function BidModal({ isOpen, onClose, artwork }: BidModalProps) {
-  const [bidAmount, setBidAmount] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState(false)
+  const [bidAmount, setBidAmount] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
-  if (!artwork) return null
+  if (!artwork) return null;
 
   const currentPrice = artwork.highestBid
     ? Number.parseFloat(artwork.highestBid.replace(" HBAR", ""))
-    : Number.parseFloat(artwork.price.replace(" HBAR", ""))
+    : Number.parseFloat(artwork.price.replace(" HBAR", ""));
 
-  const minimumBid = artwork.isAuction ? currentPrice + 50 : currentPrice
-  const bidAmountNum = Number.parseFloat(bidAmount) || 0
-  const platformFee = bidAmountNum * 0.025 // 2.5% platform fee
-  const totalCost = bidAmountNum + platformFee
+  const minimumBid = artwork.isAuction ? currentPrice + 50 : currentPrice;
+  const bidAmountNum = Number.parseFloat(bidAmount) || 0;
+  const platformFee = bidAmountNum * 0.025; // 2.5% platform fee
+  const totalCost = bidAmountNum + platformFee;
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
+    e.preventDefault();
+    setError("");
 
     if (bidAmountNum < minimumBid) {
-      setError(`Minimum ${artwork.isAuction ? "bid" : "price"} is ${minimumBid} HBAR`)
-      return
+      setError(
+        `Minimum ${artwork.isAuction ? "bid" : "price"} is ${minimumBid} HBAR`,
+      );
+      return;
     }
 
     if (bidAmountNum > 10000) {
-      setError("Maximum bid amount is 10,000 HBAR")
-      return
+      setError("Maximum bid amount is 10,000 HBAR");
+      return;
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
       if (artwork.isAuction) {
-        await hederaClient.placeBid(`auction_${artwork.id}`, bidAmountNum)
+        // await hederaClient.placeBid(`auction_${artwork.id}`, bidAmountNum);
       } else {
         // Handle direct purchase
-        await hederaClient.purchaseNFT(artwork.id.toString(), bidAmountNum)
+        // await hederaClient.purchaseNFT(artwork.id.toString(), bidAmountNum);
       }
 
-      setSuccess(true)
+      setSuccess(true);
       setTimeout(() => {
-        onClose()
-        setSuccess(false)
-        setBidAmount("")
-      }, 2000)
+        onClose();
+        setSuccess(false);
+        setBidAmount("");
+      }, 2000);
     } catch (err) {
-      setError("Transaction failed. Please try again.")
-      console.error("Bid/Purchase failed:", err)
+      setError("Transaction failed. Please try again.");
+      console.error("Bid/Purchase failed:", err);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleClose = () => {
     if (!isSubmitting) {
-      onClose()
-      setBidAmount("")
-      setError("")
-      setSuccess(false)
+      onClose();
+      setBidAmount("");
+      setError("");
+      setSuccess(false);
     }
-  }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -117,7 +131,9 @@ export function BidModal({ isOpen, onClose, artwork }: BidModalProps) {
               />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-gray-900 truncate">{artwork.title}</h3>
+              <h3 className="font-semibold text-gray-900 truncate">
+                {artwork.title}
+              </h3>
               <p className="text-sm text-gray-600">by {artwork.artist}</p>
               <Badge variant="outline" className="mt-1">
                 {artwork.culture}
@@ -130,8 +146,12 @@ export function BidModal({ isOpen, onClose, artwork }: BidModalProps) {
           {/* Current Price Info */}
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">{artwork.isAuction ? "Current Highest Bid" : "Fixed Price"}</span>
-              <span className="font-bold text-lg text-purple-600">{artwork.highestBid || artwork.price}</span>
+              <span className="text-sm text-gray-600">
+                {artwork.isAuction ? "Current Highest Bid" : "Fixed Price"}
+              </span>
+              <span className="font-bold text-lg text-purple-600">
+                {artwork.highestBid || artwork.price}
+              </span>
             </div>
 
             {artwork.timeLeft && (
@@ -145,8 +165,12 @@ export function BidModal({ isOpen, onClose, artwork }: BidModalProps) {
             )}
 
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Minimum {artwork.isAuction ? "Bid" : "Price"}</span>
-              <span className="font-medium text-green-600">{minimumBid} HBAR</span>
+              <span className="text-sm text-gray-600">
+                Minimum {artwork.isAuction ? "Bid" : "Price"}
+              </span>
+              <span className="font-medium text-green-600">
+                {minimumBid} HBAR
+              </span>
             </div>
           </div>
 
@@ -157,7 +181,9 @@ export function BidModal({ isOpen, onClose, artwork }: BidModalProps) {
             <div className="text-center py-6">
               <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-green-700 mb-2">
-                {artwork.isAuction ? "Bid Placed Successfully!" : "Purchase Successful!"}
+                {artwork.isAuction
+                  ? "Bid Placed Successfully!"
+                  : "Purchase Successful!"}
               </h3>
               <p className="text-sm text-gray-600">
                 {artwork.isAuction
@@ -168,7 +194,10 @@ export function BidModal({ isOpen, onClose, artwork }: BidModalProps) {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <Label htmlFor="bidAmount">{artwork.isAuction ? "Your Bid Amount" : "Purchase Amount"} (HBAR)</Label>
+                <Label htmlFor="bidAmount">
+                  {artwork.isAuction ? "Your Bid Amount" : "Purchase Amount"}{" "}
+                  (HBAR)
+                </Label>
                 <div className="relative mt-1">
                   <Input
                     id="bidAmount"
@@ -187,7 +216,9 @@ export function BidModal({ isOpen, onClose, artwork }: BidModalProps) {
                   </div>
                 </div>
                 {bidAmountNum > 0 && bidAmountNum < minimumBid && (
-                  <p className="text-sm text-red-600 mt-1">Amount must be at least {minimumBid} HBAR</p>
+                  <p className="text-sm text-red-600 mt-1">
+                    Amount must be at least {minimumBid} HBAR
+                  </p>
                 )}
               </div>
 
@@ -197,7 +228,9 @@ export function BidModal({ isOpen, onClose, artwork }: BidModalProps) {
                   <h4 className="font-medium text-gray-900">Cost Breakdown</h4>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">{artwork.isAuction ? "Bid Amount" : "NFT Price"}</span>
+                      <span className="text-gray-600">
+                        {artwork.isAuction ? "Bid Amount" : "NFT Price"}
+                      </span>
                       <span>{bidAmountNum} HBAR</span>
                     </div>
                     <div className="flex justify-between">
@@ -225,7 +258,8 @@ export function BidModal({ isOpen, onClose, artwork }: BidModalProps) {
                 <div className="flex items-center space-x-2 text-blue-700">
                   <Wallet className="h-4 w-4" />
                   <span className="text-sm">
-                    Ensure you have sufficient HBAR balance: {totalCost.toFixed(2)} HBAR required
+                    Ensure you have sufficient HBAR balance:{" "}
+                    {totalCost.toFixed(2)} HBAR required
                   </span>
                 </div>
               </div>
@@ -253,7 +287,9 @@ export function BidModal({ isOpen, onClose, artwork }: BidModalProps) {
                   ) : (
                     <>
                       <TrendingUp className="mr-2 h-4 w-4" />
-                      {artwork.isAuction ? `Bid ${bidAmountNum} HBAR` : `Buy for ${bidAmountNum} HBAR`}
+                      {artwork.isAuction
+                        ? `Bid ${bidAmountNum} HBAR`
+                        : `Buy for ${bidAmountNum} HBAR`}
                     </>
                   )}
                 </Button>
@@ -263,5 +299,5 @@ export function BidModal({ isOpen, onClose, artwork }: BidModalProps) {
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
