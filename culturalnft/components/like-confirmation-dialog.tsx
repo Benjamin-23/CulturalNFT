@@ -1,57 +1,88 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { Heart, Coins, Wallet, AlertTriangle, CheckCircle, Sparkles, TrendingUp } from "lucide-react"
-import Image from "next/image"
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import {
+  Heart,
+  Coins,
+  Wallet,
+  AlertTriangle,
+  CheckCircle,
+  Sparkles,
+  TrendingUp,
+} from "lucide-react";
+import Image from "next/image";
+import { hederaClient } from "@/lib/hedera-client";
 
 interface Artwork {
-  id: number
-  title: string
-  artist: string
-  culture: string
-  image: string
-  likes: number
+  id: number;
+  title: string;
+  artist: string;
+  culture: string;
+  image: string;
+  likes: number;
 }
 
 interface LikeConfirmationDialogProps {
-  isOpen: boolean
-  onClose: () => void
-  onConfirm: (artwork: Artwork) => Promise<void>
-  artwork: Artwork | null
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: (artwork: Artwork) => Promise<void>;
+  artwork: Artwork | null;
 }
 
-export function LikeConfirmationDialog({ isOpen, onClose, onConfirm, artwork }: LikeConfirmationDialogProps) {
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
+export function LikeConfirmationDialog({
+  isOpen,
+  onClose,
+  onConfirm,
+  artwork,
+}: LikeConfirmationDialogProps) {
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [transactionHash, setTransactionHash] = useState<string | null>(null);
 
-  if (!artwork) return null
+  if (!artwork) return null;
 
   const handleConfirm = async () => {
-    setIsProcessing(true)
+    setIsProcessing(true);
     try {
-      await onConfirm(artwork)
-      setIsSuccess(true)
+      // Use real Hedera contract call
+      const result = await hederaClient.likeArtwork(artwork.id.toString());
+      console.log("Like transaction successful:", result);
+
+      setTransactionHash(result.transactionHash);
+
+      // Call the parent's onConfirm to update UI state
+      await onConfirm(artwork);
+
+      setIsSuccess(true);
       setTimeout(() => {
-        onClose()
-        setIsSuccess(false)
-        setIsProcessing(false)
-      }, 2000)
-    } catch (error) {
-      console.error("Like transaction failed:", error)
-      setIsProcessing(false)
+        onClose();
+        setIsSuccess(false);
+        setIsProcessing(false);
+        setTransactionHash(null);
+      }, 3000);
+    } catch (error: any) {
+      console.error("Like transaction failed:", error);
+      setIsProcessing(false);
+      // You might want to show an error state here
     }
-  }
+  };
 
   const handleClose = () => {
     if (!isProcessing) {
-      onClose()
-      setIsSuccess(false)
+      onClose();
+      setIsSuccess(false);
+      setTransactionHash(null);
     }
-  }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -85,13 +116,30 @@ export function LikeConfirmationDialog({ isOpen, onClose, onConfirm, artwork }: 
                   <CheckCircle className="h-16 w-16 text-green-500 mx-auto animate-bounce" />
                   <div className="absolute inset-0 bg-green-400 rounded-full animate-ping opacity-25" />
                 </div>
-                <h3 className="text-xl font-bold text-green-700 dark:text-green-400 mb-2">Love Sent! 💖</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <h3 className="text-xl font-bold text-green-700 dark:text-green-400 mb-2">
+                  Love Sent! 💖
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                   Your 1 HBAR has been sent to the community wallet
                 </p>
+
+                {transactionHash && (
+                  <div className="mb-4">
+                    <a
+                      href={`https://hashscan.io/testnet/transaction/${transactionHash}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 underline text-sm"
+                    >
+                      View on HashScan
+                    </a>
+                  </div>
+                )}
+
                 <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
                   <p className="text-sm text-green-700 dark:text-green-400">
-                    Thank you for supporting "{artwork.title}" and our artist community! ✨
+                    Thank you for supporting "{artwork.title}" and our artist
+                    community! ✨
                   </p>
                   <div className="flex items-center justify-center space-x-4 mt-2 text-xs text-green-600 dark:text-green-400">
                     <div className="flex items-center space-x-1">
@@ -123,8 +171,12 @@ export function LikeConfirmationDialog({ isOpen, onClose, onConfirm, artwork }: 
                     </div>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 dark:text-white truncate">{artwork.title}</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">by {artwork.artist}</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-white truncate">
+                      {artwork.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      by {artwork.artist}
+                    </p>
                     <Badge variant="outline" className="mt-1 text-xs">
                       {artwork.culture}
                     </Badge>
@@ -142,7 +194,9 @@ export function LikeConfirmationDialog({ isOpen, onClose, onConfirm, artwork }: 
                 {/* Transaction Details */}
                 <div className="space-y-4">
                   <div className="text-center">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Confirm Your Support</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                      Confirm Your Support
+                    </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
                       Show your appreciation for this cultural artwork
                     </p>
@@ -152,27 +206,47 @@ export function LikeConfirmationDialog({ isOpen, onClose, onConfirm, artwork }: 
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center space-x-2">
                         <Coins className="h-5 w-5 text-yellow-500" />
-                        <span className="font-medium text-gray-900 dark:text-white">Like Payment</span>
+                        <span className="font-medium text-gray-900 dark:text-white">
+                          Like Payment
+                        </span>
                       </div>
-                      <span className="text-xl font-bold text-purple-600 dark:text-purple-400">1 HBAR</span>
+                      <span className="text-xl font-bold text-purple-600 dark:text-purple-400">
+                        1 HBAR
+                      </span>
                     </div>
 
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-400">Destination:</span>
-                        <span className="font-medium text-gray-900 dark:text-white">Community Wallet</span>
+                        <span className="text-gray-600 dark:text-gray-400">
+                          Destination:
+                        </span>
+                        <span className="font-medium text-gray-900 dark:text-white">
+                          Community Wallet
+                        </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-400">Purpose:</span>
-                        <span className="font-medium text-gray-900 dark:text-white">Artist Support</span>
+                        <span className="text-gray-600 dark:text-gray-400">
+                          Purpose:
+                        </span>
+                        <span className="font-medium text-gray-900 dark:text-white">
+                          Artist Support
+                        </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-400">Network Fee:</span>
-                        <span className="font-medium text-gray-900 dark:text-white">~0.001 HBAR</span>
+                        <span className="text-gray-600 dark:text-gray-400">
+                          Network Fee:
+                        </span>
+                        <span className="font-medium text-gray-900 dark:text-white">
+                          ~0.001 HBAR
+                        </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-400">Points Earned:</span>
-                        <span className="font-medium text-purple-600 dark:text-purple-400">+10 Points</span>
+                        <span className="text-gray-600 dark:text-gray-400">
+                          Points Earned:
+                        </span>
+                        <span className="font-medium text-purple-600 dark:text-purple-400">
+                          +10 Points
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -182,12 +256,24 @@ export function LikeConfirmationDialog({ isOpen, onClose, onConfirm, artwork }: 
                     <div className="flex items-start space-x-3">
                       <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
                       <div className="space-y-2">
-                        <h4 className="font-medium text-amber-800 dark:text-amber-300">Important Notice</h4>
+                        <h4 className="font-medium text-amber-800 dark:text-amber-300">
+                          Important Notice
+                        </h4>
                         <ul className="text-sm text-amber-700 dark:text-amber-400 space-y-1">
-                          <li>• Once you like an artwork, you cannot unlike it</li>
-                          <li>• Your HBAR will be sent to the community reward pool</li>
-                          <li>• This helps fund rewards for popular artworks</li>
-                          <li>• This transaction will be added to your like history</li>
+                          <li>
+                            • Once you like an artwork, you cannot unlike it
+                          </li>
+                          <li>
+                            • Your HBAR will be sent to the community reward
+                            pool
+                          </li>
+                          <li>
+                            • This helps fund rewards for popular artworks
+                          </li>
+                          <li>
+                            • This transaction will be recorded on the
+                            blockchain
+                          </li>
                         </ul>
                       </div>
                     </div>
@@ -198,7 +284,8 @@ export function LikeConfirmationDialog({ isOpen, onClose, onConfirm, artwork }: 
                     <div className="flex items-center space-x-2 text-blue-700 dark:text-blue-300">
                       <Wallet className="h-4 w-4" />
                       <span className="text-sm">
-                        Ensure you have at least 1.01 HBAR in your wallet for this transaction
+                        Ensure you have at least 1.01 HBAR in your wallet for
+                        this transaction
                       </span>
                     </div>
                   </div>
@@ -238,5 +325,5 @@ export function LikeConfirmationDialog({ isOpen, onClose, onConfirm, artwork }: 
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

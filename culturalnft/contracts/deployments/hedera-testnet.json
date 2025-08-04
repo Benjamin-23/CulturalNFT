@@ -1,0 +1,13 @@
+{
+  "network": "hedera-testnet",
+  "chainId": 296,
+  "deployer": "0xFc6E41a8D293A79be1A02473aa4e19d952b05D13",
+  "communityWallet": "0x7E0ACa2f90A76115c34AFB7D7469507aAc8e9F31",
+  "contracts": {
+    "CulturalNFT": "0x7624633eE3bfeFfe1E855E1eFe5B5bEdCB32c05B",
+    "CulturalMarketplace": "0xC3ae680a1Ad644A2bBDb1957BD9cDB09A6016061",
+    "CommunityRewards": "0x1be9484ef2Cc1A4F3833F779c79aDD711c93fcF8"
+  },
+  "deploymentTime": "2025-08-03T18:20:18.256Z",
+  "blockNumber": 23100106
+}
