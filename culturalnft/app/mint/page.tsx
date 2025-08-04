@@ -76,8 +76,13 @@ export default function MintPage() {
         artist: "Current User", // In production, get from user profile
         royalty: Number.parseInt(formData.royalty),
       };
-
+      console.log(metadata, "meta data");
       const result = await hederaClient.mintNFT(metadata);
+      console.log(result);
+      console.log(result.tokenId);
+      console.log(result.transactionHash);
+      console.log(result.tokenId);
+      console.log(result.transactionHash);
 
       setSuccess({
         tokenId: result.tokenId,

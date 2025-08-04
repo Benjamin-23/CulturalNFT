@@ -171,7 +171,8 @@ export class HederaClient {
         royaltyBasisPoints,
         { value: mintingFee },
       );
-
+      console.log("Transaction hash:", tx);
+      console.log("Transaction status:", tx.status);
       const receipt = await tx.wait();
       return receipt;
     } catch (error) {
