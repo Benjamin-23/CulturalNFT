@@ -38,6 +38,7 @@ export class CulturalNFTContract {
         { value: mintingFee },
       );
 
+      console.log("Transaction hash:", tx.hash);
       const receipt = await tx.wait();
 
       // Extract token ID from events
