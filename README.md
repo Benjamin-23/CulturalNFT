@@ -51,19 +51,6 @@ A comprehensive NFT marketplace built on Hedera Hashgraph, dedicated to celebrat
 - **Batch Minting**: Upload and mint multiple artworks efficiently
 - **Cultural Categories**: Pre-defined categories for different cultural art forms
 
-#### **Technical Implementation:**
-\`\`\`typescript
-// Example minting process
-const mintResult = await hederaClient.mintNFT({
-  title: "Sacred Geometry of Mandala",
-  description: "Traditional mandala representing cosmic order",
-  culture: "Indian",
-  story: "This mandala was created following ancient Vedic principles...",
-  imageUrl: "ipfs://QmHash...",
-  artist: "Priya Sharma",
-  royalty: 10 // 10% royalty
-});
-\`\`\`
 
 ### 🏪 **Marketplace & Discovery**
 
@@ -81,15 +68,6 @@ const mintResult = await hederaClient.mintNFT({
 - **Price Alerts**: Notifications when desired artworks reach target prices
 - **Cultural Collections**: Curated collections by cultural themes
 
-#### **Auction System:**
-\`\`\`typescript
-// Bidding mechanism
-const bidResult = await hederaClient.placeBid(auctionId, {
-  amount: bidAmount,
-  bidder: userAccountId,
-  timestamp: Date.now()
-});
-\`\`\`
 
 ### 💎 **Community Rewards & Engagement**
 
@@ -120,18 +98,7 @@ const bidResult = await hederaClient.placeBid(auctionId, {
    - Diamond community badge
    - VIP access to artist events
 
-#### **Point Earning System:**
-\`\`\`typescript
-// Points earned for different activities
-const pointsSystem = {
-  likeArtwork: 10,        // Like any artwork
-  purchaseNFT: 100,       // Buy an NFT
-  winAuction: 200,        // Win an auction
-  referFriend: 500,       // Successful referral
-  dailyLogin: 5,          // Daily platform visit
-  shareArtwork: 15        // Share artwork on social media
-};
-\`\`\`
+
 
 ### 📊 **Like History & Contributions Tracking**
 
@@ -149,21 +116,6 @@ const pointsSystem = {
 - **Visual Timeline**: Beautiful interface showing your art appreciation journey
 - **Impact Metrics**: Total contributed, favorite artists, community ranking
 
-#### **Like History Structure:**
-\`\`\`typescript
-interface LikeHistoryEntry {
-  id: number;
-  artworkTitle: string;
-  artist: string;
-  culture: string;
-  amount: string;           // Always "1.0 HBAR"
-  date: string;            // ISO date
-  time: string;            // HH:MM format
-  transactionId: string;   // Hedera transaction ID
-  pointsEarned: number;    // Always 10 points
-  artworkLikes: number;    // Total likes artwork had
-}
-\`\`\`
 
 ### 👤 **User Profiles & Social Features**
 
@@ -332,10 +284,7 @@ interface LikeHistoryEntry {
 ## 🤝 **Community & Support**
 
 ### **Join Our Community:**
-- **Discord**: Real-time chat with artists and collectors
-- **Twitter**: Latest updates and featured artworks
-- **Medium**: In-depth articles about cultural art and blockchain
-- **Newsletter**: Weekly highlights and platform updates
+- **Discord**: Real-time chat with artists and collectors ## username: __basilicabenji__
 
 ### **Support Channels:**
 - **Help Center**: Comprehensive guides and FAQs
