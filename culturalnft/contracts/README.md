@@ -28,24 +28,24 @@ The rewards system that tracks:
 ## 🚀 Deployment
 
 ### Prerequisites
-\`\`\`bash
+\`\`\`
 npm install
 cp .env.example .env
 # Fill in your environment variables
 \`\`\`
 
 ### Deploy to Hedera Testnet
-\`\`\`bash
+\`\`\`
 npm run deploy:testnet
 \`\`\`
 
 ### Deploy to Hedera Mainnet
-\`\`\`bash
+\`\`\`
 npm run deploy:mainnet
 \`\`\`
 
 ### Verify Contracts
-\`\`\`bash
+\`\`\`
 npm run verify
 \`\`\`
 
@@ -84,7 +84,7 @@ After deployment, contract addresses will be saved to:
 
 ## 🧪 Testing
 
-\`\`\`bash
+\`\`\`
 npm test
 \`\`\`
 
