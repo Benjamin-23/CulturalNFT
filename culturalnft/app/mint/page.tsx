@@ -75,6 +75,7 @@ export default function MintPage() {
         imageUrl,
         artist: "Current User", // In production, get from user profile
         royalty: Number.parseInt(formData.royalty),
+        price: Number.parseInt(formData.price),
       };
       console.log(metadata, "meta data");
       const result = await hederaClient.mintNFT(metadata);
@@ -315,25 +316,40 @@ export default function MintPage() {
                       rows={4}
                     />
                   </div>
+                  <div className="flex justify-between items-center">
+                    <div className=" flex flex-col gap-2 ">
+                      <label htmlFor="price">Price (HBAR)</label>
+                      <input
+                        type="number"
+                        id="price"
+                        value={formData.price}
+                        onChange={(e) =>
+                          setFormData({ ...formData, price: e.target.value })
+                        }
+                        placeholder="Enter price in HBAR"
+                        className=" border border-gray-300 rounded-md px-2 py-1"
+                      />
+                    </div>
 
-                  <div>
-                    <Label htmlFor="royalty">Royalty (%) *</Label>
-                    <Select
-                      value={formData.royalty}
-                      onValueChange={(value) =>
-                        setFormData({ ...formData, royalty: value })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="5">5%</SelectItem>
-                        <SelectItem value="10">10%</SelectItem>
-                        <SelectItem value="15">15%</SelectItem>
-                        <SelectItem value="20">20%</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <div className="flex flex-col items-center gap-2">
+                      <Label htmlFor="royalty">Royalty (%) *</Label>
+                      <Select
+                        value={formData.royalty}
+                        onValueChange={(value) =>
+                          setFormData({ ...formData, royalty: value })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="5">5%</SelectItem>
+                          <SelectItem value="10">10%</SelectItem>
+                          <SelectItem value="15">15%</SelectItem>
+                          <SelectItem value="20">20%</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </div>
               </div>

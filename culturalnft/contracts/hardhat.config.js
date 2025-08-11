@@ -18,7 +18,7 @@ module.exports = {
       accounts: [process.env.PRIVATE_KEY || ""],
       chainId: 296,
       gas: 3000000,
-      // gasPrice: 10000000000, // 10 gwei
+      gasPrice: 10000000000, // 10 gwei
     },
     "hedera-mainnet": {
       url: "https://mainnet.hashio.io/api",
